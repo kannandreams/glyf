@@ -4,7 +4,7 @@ from pathlib import Path
 import duckdb
 import pytest
 
-from glyf.execution.duckdb import execute_sql
+from glyf.execution import execute_sql
 from glyf.pipeline import RenderError, render_project
 from tests.helpers import copy_basic_project
 
@@ -15,7 +15,7 @@ def test_render_project_writes_compiled_sql_and_artifacts(tmp_path: Path) -> Non
     result = render_project(project)
 
     assert len(result.charts) == 1
-    assert list(result.charts[0].data.columns) == ["month", "revenue"]
+    assert result.charts[0].data.columns == ("month", "revenue")
 
     compiled_sql = project / "target" / "glyf" / "compiled" / "revenue.sql"
     metadata_json = project / "target" / "glyf" / "charts" / "revenue.json"
@@ -63,7 +63,7 @@ def test_duckdb_execution_loads_seed_tables(tmp_path: Path) -> None:
         "select month, revenue from main.fct_orders order by month",
     )
 
-    assert data.to_dict(orient="records") == [
+    assert list(data.rows) == [
         {"month": "2026-01", "revenue": 1200},
         {"month": "2026-02", "revenue": 1800},
         {"month": "2026-03", "revenue": 2100},
@@ -113,7 +113,7 @@ def test_duckdb_execution_uses_project_target_database(tmp_path: Path) -> None:
         'select month, revenue from "simple_dbt"."main"."fct_orders"',
     )
 
-    assert data.to_dict(orient="records") == [
+    assert list(data.rows) == [
         {"month": "2026-01", "revenue": 1200}
     ]
 

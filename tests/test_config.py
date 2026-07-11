@@ -20,6 +20,7 @@ def test_missing_config_uses_defaults(tmp_path: Path) -> None:
     assert config.visualisations_path == Path("visualisations")
     assert config.dashboards_path == Path("dashboards")
     assert config.output_path == Path("target/glyf")
+    assert config.execution.backend == "duckdb"
     assert config.render.formats == ("svg", "png")
     assert config.render.default_width == 800
     assert config.render.default_height == 400
@@ -36,6 +37,8 @@ def test_valid_config_loads_correctly(tmp_path: Path) -> None:
         "charts_path: out/glyf/chart-files\n"
         "dashboards_output_path: out/glyf/pages\n"
         "site_path: out/glyf/public\n"
+        "execution:\n"
+        "  backend: duckdb\n"
         "render:\n"
         "  formats:\n"
         "    - svg\n"
@@ -53,6 +56,7 @@ def test_valid_config_loads_correctly(tmp_path: Path) -> None:
     assert config.visualisations_path == Path("viz")
     assert config.dashboards_path == Path("boards")
     assert config.compiled_path == Path("out/glyf/sql")
+    assert config.execution.backend == "duckdb"
     assert config.render.formats == ("svg",)
     assert config.render.default_width == 640
     assert config.render.default_height == 360

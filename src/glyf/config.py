@@ -17,6 +17,11 @@ class RenderConfig:
 
 
 @dataclass(frozen=True)
+class ExecutionConfig:
+    backend: str = "duckdb"
+
+
+@dataclass(frozen=True)
 class DashboardConfig:
     theme: str = "light"
     embed_charts: bool = True
@@ -32,6 +37,7 @@ class GlyfConfig:
     charts_path: Path = Path("target/glyf/charts")
     dashboards_output_path: Path = Path("target/glyf/dashboards")
     site_path: Path = Path("target/glyf/site")
+    execution: ExecutionConfig = ExecutionConfig()
     render: RenderConfig = RenderConfig()
     dashboard: DashboardConfig = DashboardConfig()
 
@@ -66,6 +72,7 @@ def load_config(project_root: Path, config_path: Path | None = None) -> GlyfConf
             "target/glyf/dashboards",
         ),
         site_path=_path_value(raw, "site_path", "target/glyf/site"),
+        execution=_execution_config(raw.get("execution", {})),
         render=_render_config(raw.get("render", {})),
         dashboard=_dashboard_config(raw.get("dashboard", {})),
     )
@@ -121,6 +128,15 @@ def _render_config(raw: object) -> RenderConfig:
         default_width=_positive_int(raw, "default_width", 800),
         default_height=_positive_int(raw, "default_height", 400),
         renderer=_string_value(raw, "renderer", "altair"),
+    )
+
+
+def _execution_config(raw: object) -> ExecutionConfig:
+    if not isinstance(raw, dict):
+        raise ConfigError("Invalid config: 'execution' must be a mapping")
+
+    return ExecutionConfig(
+        backend=_string_value(raw, "backend", "duckdb"),
     )
 
 

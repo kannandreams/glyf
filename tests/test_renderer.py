@@ -2,6 +2,7 @@ from pathlib import Path
 import re
 
 import pandas as pd
+import polars as pl
 import pytest
 
 from glyf.config import RenderConfig
@@ -18,7 +19,7 @@ def test_render_chart_writes_png_and_svg(tmp_path: Path) -> None:
         "LABEL title => 'Monthly Revenue'\n",
         name="revenue",
     )
-    data = pd.DataFrame(
+    data = pl.DataFrame(
         {
             "month": ["2026-01", "2026-02"],
             "revenue": [1200, 1800],

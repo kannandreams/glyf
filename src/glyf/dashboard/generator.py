@@ -76,7 +76,10 @@ def generate_dashboards(
         for chart_name in dashboard.chart_names:
             try:
                 artifact = macro_context.chart_artifact(chart_name)
-                assert artifact is not None
+                if artifact is None:
+                    raise DashboardGenerationError(
+                        f"dashboard '{dashboard.name}' could not load chart artifact '{chart_name}'"
+                    )
                 chart_artifacts[chart_name] = artifact
             except ChartArtifactError as exc:
                 rel_path = dashboard_path.relative_to(scan.root).as_posix()
