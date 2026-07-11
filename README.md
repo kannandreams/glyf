@@ -3,7 +3,7 @@
 [![Tests](https://github.com/kannandreams/glyf/actions/workflows/test.yml/badge.svg)](https://github.com/kannandreams/glyf/actions/workflows/test.yml)
 [![Coverage](https://codecov.io/gh/kannandreams/glyf/branch/main/graph/badge.svg)](https://codecov.io/gh/kannandreams/glyf)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB.svg?logo=python&logoColor=white)](/Users/atlas/Documents/orbital/forge/glyf/pyproject.toml)
-[![Rust Core](https://img.shields.io/badge/rust-core-000000.svg?logo=rust&logoColor=white)](/Users/atlas/Documents/orbital/forge/glyf/crates/glyf-core/Cargo.toml)
+[![Rust 1.83+](https://img.shields.io/badge/rust-1.83%2B-DEA584.svg?logo=rust&logoColor=white)](/Users/atlas/Documents/orbital/forge/glyf/crates/glyf-core/Cargo.toml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
 Open Source Visualization build tool to data pipeline.

@@ -1,10 +1,8 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-import pandas as pd
-
 from glyf.config import GlyfConfig
-from glyf.execution.duckdb import SqlExecutionError, execute_sql
+from glyf.execution import QueryResult, SqlExecutionError, execute_sql
 from glyf.ggsql.models import GgsqlChart
 from glyf.ggsql.parser import GgsqlParseError, parse_ggsql_file
 from glyf.ggsql.renderer import ChartRenderError, render_chart
@@ -25,7 +23,7 @@ from glyf.project.scanner import ProjectScan, scan_project
 class RenderedChart:
     chart: GgsqlChart
     compiled_sql: str
-    data: pd.DataFrame
+    data: QueryResult
     artifacts: ChartArtifacts
 
 
@@ -79,7 +77,11 @@ def render_project(
         write_compiled_sql(artifacts.compiled_sql, resolution.sql)
 
         try:
-            data = execute_sql(scan.root, resolution.sql)
+            data = execute_sql(
+                scan.root,
+                resolution.sql,
+                executor=config.execution.backend,
+            )
         except SqlExecutionError as exc:
             rel_path = path.relative_to(scan.root).as_posix()
             raise RenderError(f"{rel_path} SQL execution failed: {exc}") from exc

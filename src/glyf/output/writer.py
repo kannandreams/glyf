@@ -2,9 +2,8 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-import pandas as pd
-
 from glyf.config import GlyfConfig
+from glyf.execution.result import QueryResult
 from glyf.ggsql.models import GgsqlChart
 from glyf.output.paths import artifact_paths
 
@@ -70,11 +69,16 @@ def write_chart_metadata(project_root: Path, chart: GgsqlChart, artifacts: Chart
     )
 
 
-def write_chart_data(project_root: Path, chart: GgsqlChart, artifacts: ChartArtifacts, data: pd.DataFrame) -> None:
+def write_chart_data(
+    project_root: Path,
+    chart: GgsqlChart,
+    artifacts: ChartArtifacts,
+    data: QueryResult,
+) -> None:
     payload = {
         "name": chart.name,
         "fields": list(data.columns),
-        "rows": data.to_dict(orient="records"),
+        "rows": list(data.rows),
     }
     artifacts.data_json.parent.mkdir(parents=True, exist_ok=True)
     artifacts.data_json.write_text(

@@ -1,22 +1,26 @@
 from pathlib import Path
 
 import duckdb
-import pandas as pd
+
+from glyf.execution.base import SqlExecutionError, sql_executor
+from glyf.execution.result import QueryResult
 
 
-class SqlExecutionError(ValueError):
-    """Raised when compiled SQL cannot be executed."""
+class DuckDbExecutor:
+    def execute(self, project_root: Path, sql: str) -> QueryResult:
+        database = _duckdb_database(project_root)
+        try:
+            with duckdb.connect(database=database) as connection:
+                if database == ":memory:":
+                    _load_seed_tables(connection, project_root / "seeds")
+                return QueryResult.from_pandas(connection.execute(sql).fetchdf())
+        except duckdb.Error as exc:
+            raise SqlExecutionError(str(exc)) from exc
 
 
-def execute_sql(project_root: Path, sql: str) -> pd.DataFrame:
-    database = _duckdb_database(project_root)
-    try:
-        with duckdb.connect(database=database) as connection:
-            if database == ":memory:":
-                _load_seed_tables(connection, project_root / "seeds")
-            return connection.execute(sql).fetchdf()
-    except duckdb.Error as exc:
-        raise SqlExecutionError(str(exc)) from exc
+@sql_executor("duckdb_dbapi")
+def _duckdb_executor() -> DuckDbExecutor:
+    return DuckDbExecutor()
 
 
 def _duckdb_database(project_root: Path) -> str:
@@ -30,7 +34,7 @@ def _duckdb_database(project_root: Path) -> str:
     return ":memory:"
 
 
-def _load_seed_tables(connection: duckdb.DuckDBPyConnection, seeds_dir: Path) -> None:
+def _load_seed_tables(connection: object, seeds_dir: Path) -> None:
     if not seeds_dir.exists():
         return
 

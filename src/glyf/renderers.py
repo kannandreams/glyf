@@ -1,12 +1,12 @@
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any
 
 from glyf.config import RenderConfig
+from glyf.execution.result import QueryResult
 from glyf.ggsql.models import GgsqlChart
 
 ChartRenderer = Callable[
-    [GgsqlChart, Any, Path, Path, RenderConfig, Path | None],
+    [GgsqlChart, QueryResult, Path, Path, RenderConfig, Path | None],
     None,
 ]
 
